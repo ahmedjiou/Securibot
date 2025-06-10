@@ -1,0 +1,3 @@
+users/{uid}/ → { username, email, ..., ConvoHistory: [convoID1, convoID2, ...] }
+
+conversations/{uid}/{conversationId}/ → { messages: [...], title: "...", lastUpdated: ... }

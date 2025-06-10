@@ -1,0 +1,23 @@
+// This is how the conversation history array that the frontend sends will look like
+// We just take a look at the current convo 
+[
+  {
+    "conversationId": "convo123",
+    "conversation": {
+      "messages": [
+        {
+          "sender": "user",
+          "text": "Hello!",
+          "timestamp": "2025-06-07T13:00:00Z"
+        },
+        {
+          "sender": "bot",
+          "text": "Hi! How can I help you?",
+          "timestamp": "2025-06-07T13:00:01Z"
+        }
+      ],
+      "title": "Example Conversation"
+    }
+  }
+]
+
