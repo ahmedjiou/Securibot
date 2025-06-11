@@ -7,27 +7,6 @@ headers = {
     "Authorization": "Bearer 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",
 }
 
-def query(payload):
-    response = requests.post(API_URL, headers=headers, json=payload)
-    return response.json()
-
-response = query({
-    "messages": [
-        {
-            "role": "user",
-            "content": [
-                {
-                    "type": "text",
-                    "text": "Bonjour comment ça va ?"
-                }
-                
-            ]
-        }
-    ],
-    "model": "mistralai/Mistral-Small-3.1-24B-Instruct-2503"
-})
-
-print(response["choices"][0]["message"])
 
 
 import os
@@ -123,5 +102,5 @@ def generate_response(prompt, context):
     final_prompt = build_augmented_prompt(prompt, context, retrieved_chunks)
 
     # Step 3: Query Mistral
-    #response = query_mistral(final_prompt)
-    return final_prompt
+    response = query_mistral(final_prompt)
+    return response

@@ -13,8 +13,10 @@ def post_conversation_list():
         response.headers.add("Access-Control-Allow-Origin", "*")
         response.headers.add("Access-Control-Allow-Headers", "Content-Type,Authorization")
         response.headers.add("Access-Control-Allow-Methods", "POST,OPTIONS")
+        print("Options request received")
         return response, 200
 
+    print("Fetching conversation list...")
     # Get the Firebase JWT token
     auth_header = request.headers.get("Authorization", "")
     if not auth_header.startswith("Bearer "):
@@ -33,7 +35,7 @@ def post_conversation_list():
         return jsonify({"conversations": []})
 
     convo_ids = user_doc.to_dict().get("ConvoHistory", [])
-
+    print(convo_ids)
     results = []
 
     # For each conversation ID, fetch title from conversations/{uid}/user_conversations/{id}

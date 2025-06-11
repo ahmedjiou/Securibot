@@ -45,12 +45,12 @@ def generate_prompt_for_mistral():
 
     
     # Combine the prompt and FOR NOW DONT QUERY THE MODEL JUST SHOW THE PROMPT 
-    final_prompt = generate_response(prompt, context)
+    response = generate_response(prompt, context)
 
-    print(final_prompt)
+    print(response)
    
 
     return jsonify({
-        "final_prompt": final_prompt,
+        "final_prompt": response,
         "status": "Prompt generated successfully"
     }), 200

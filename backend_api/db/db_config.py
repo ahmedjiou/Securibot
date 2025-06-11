@@ -12,4 +12,3 @@ db = firestore.client()
 
 print("Connected to the firebase database")
 
-exports = {"db": db}

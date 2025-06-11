@@ -35,7 +35,7 @@ def update_conversation():
         return jsonify({"error": "Invalid JSON payload", "details": str(e)}), 400
 
     conv_ids = []
-
+    print(conv_list)
     for item in conv_list:
         conv_id = item.get("conversationId")
         conv_data = item.get("conversation")

@@ -52,7 +52,7 @@ def post_full_conversation():
 
     # Fetch full conversation document from Firestore
     conv_doc = db.collection("conversations").document(uid).collection("user_conversations").document(conversation_id).get()
-
+    print(conv_doc)
     if not conv_doc.exists:
         return jsonify({"error": "Conversation not found"}), 404
 
