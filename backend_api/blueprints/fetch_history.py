@@ -1,11 +1,20 @@
 from flask import Blueprint, request, jsonify
 from firebase_admin import auth
-from backend_api.blueprints import convo_bp
+from . import convo_bp
 from db.db_config import db
 from datetime import datetime
 
-@convo_bp.route("/api/fetchHistory/", methods=["POST"])
+# Pour fetcher l'historique des conversations
+@convo_bp.route("/api/getUserConvos/", methods=["POST", "OPTIONS"])
 def post_conversation_list():
+    # Handle preflight OPTIONS request
+    if request.method == "OPTIONS":
+        response = jsonify({"status": "ok"})
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        response.headers.add("Access-Control-Allow-Headers", "Content-Type,Authorization")
+        response.headers.add("Access-Control-Allow-Methods", "POST,OPTIONS")
+        return response, 200
+
     # Get the Firebase JWT token
     auth_header = request.headers.get("Authorization", "")
     if not auth_header.startswith("Bearer "):

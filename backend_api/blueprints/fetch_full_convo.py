@@ -20,10 +20,15 @@ from datetime import datetime
     - A JSON object with the full conversation details and a 200 status code on success.
     - An error message and a 400, 401, or 404 status code on failure.
 """
-@convo_bp.route("/api/fetchFullConvo/", methods=["POST"])
+@convo_bp.route("/api/getFullConvo/", methods=["POST", "OPTIONS"])
 def post_full_conversation():
     # Extract and validate JWT
-
+    if request.method == "OPTIONS":
+        response = jsonify({"status": "ok"})
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        response.headers.add("Access-Control-Allow-Headers", "Content-Type,Authorization")
+        response.headers.add("Access-Control-Allow-Methods", "POST,OPTIONS")
+        return response, 200
 
     auth_header = request.headers.get("Authorization", "")
     if not auth_header.startswith("Bearer "):

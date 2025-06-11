@@ -6,8 +6,14 @@ from utils.chatbot import generate_response
 
 mistral_bp = Blueprint('mistral_bp', __name__)
 
-@mistral_bp.route("/api/generate/", methods=["POST"])
+@mistral_bp.route("/api/generate/", methods=["POST", "OPTIONS"])
 def generate_prompt_for_mistral():
+    if request.method == "OPTIONS":
+        response = jsonify({"status": "ok"})
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        response.headers.add("Access-Control-Allow-Headers", "Content-Type,Authorization")
+        response.headers.add("Access-Control-Allow-Methods", "POST,OPTIONS")
+        return response, 200
     # Step 1: Verify Firebase JWT
     # Faut voir comment faire pour le guest mode si jamais 
     auth_header = request.headers.get("Authorization", "")

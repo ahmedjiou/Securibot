@@ -1,34 +1,19 @@
 from flask import Blueprint, request, jsonify
 from firebase_admin import auth
-from backend_api.blueprints import convo_bp
+from . import convo_bp
+
 from db.db_config import db
 from datetime import datetime
 
-
-
-
-"""
-Updates a user's conversation history.
-
-This endpoint accepts a list of conversations, validates the data, and updates the user's conversation history in the Firebase database.
-
-**Request Body:**
-A JSON list of conversations, where each conversation item contains:
-  - `conversationId`: A unique identifier for the conversation
-  - `conversation`: An object containing conversation data, including:
-    - `messages`: A list of message objects, each containing:
-      - `sender`: The sender of the message (either "user" or "bot")
-      - `text`: The text content of the message
-      - `timestamp`: The timestamp of the message
-
-**Authentication:**
-This endpoint requires a valid Bearer token in the `Authorization` header.
-
-**Returns:**
-A JSON response with a status message, and a 200 status code on success, or an error response with a 400 or 401 status code on failure.
-"""
-@convo_bp.route("/api/currentConvo/", methods=["POST"])
+@convo_bp.route("/api/currentConvo/", methods=["POST", "OPTIONS"])
 def update_conversation():
+
+    if request.method == "OPTIONS":
+        response = jsonify({"status": "ok"})
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        response.headers.add("Access-Control-Allow-Headers", "Content-Type,Authorization")
+        response.headers.add("Access-Control-Allow-Methods", "POST,OPTIONS")
+        return response, 200
     # Step 1: Get and verify Firebase token
     auth_header = request.headers.get("Authorization", "")
     if not auth_header.startswith("Bearer "):
@@ -59,18 +44,33 @@ def update_conversation():
             return jsonify({"error": f"Invalid item format: {item}"}), 400
 
         messages = conv_data.get("messages", [])
-        title = conv_data.get("title", "Untitled Conversation")
+        provided_title = conv_data.get("title", None)
 
         # Validate messages
-        if not isinstance(messages, list):
-            return jsonify({"error": f"'messages' must be a list for conversationId {conv_id}"}), 400
+        if not isinstance(messages, list) or len(messages) == 0:
+            return jsonify({"error": f"'messages' must be a non-empty list for conversationId {conv_id}"}), 400
+
         for msg in messages:
             if not all(k in msg for k in ["sender", "text", "timestamp"]):
                 return jsonify({"error": f"Incomplete message: {msg}"}), 400
             if msg["sender"] not in ["user", "bot"]:
                 return jsonify({"error": f"Invalid sender in message: {msg}"}), 400
 
-        # Add timestamp metadata
+        # Generate title if not provided
+        if not provided_title:
+            # Find first user message
+            first_user_msg = next((m for m in messages if m["sender"] == "user"), None)
+            if first_user_msg:
+                words = first_user_msg["text"].split()
+                auto_title = " ".join(words[:3]) if words else "Untitled"
+            else:
+                auto_title = "Untitled"
+
+            title = auto_title
+        else:
+            title = provided_title
+
+        # Add title and lastUpdated timestamp to conv_data
         conv_data["title"] = title
         conv_data["lastUpdated"] = datetime.utcnow().isoformat()
 
